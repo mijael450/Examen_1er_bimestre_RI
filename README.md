@@ -92,3 +92,5 @@ Cada resultado incluye:
 - `scripts/build_index.py`: crea el indice y `artifacts/metrics.json`.
 - `examen1bim.ipynb`: explicacion y resultados reproducibles.
 
+
+> **Nota:** La estructura del directorios y codigo esta basada en el proyecto del primer bimestre ya realizado, el cual a su ves esta basado en un proyecto propio.
