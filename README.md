@@ -15,22 +15,71 @@ python scripts\build_index.py
 python -m unittest discover -s tests -v
 ```
 
-## Servicio local (no publica nada en internet)
+## Web service
 
-```powershell
-python -m uvicorn api:app --host 127.0.0.1 --port 8000
+La API REST se encuentra desplegada en Render:
+
+**URL base:** https://examen-1er-bimestre-ri.onrender.com
+
+### Comprobar disponibilidad
+
+```http
+GET /health
 ```
 
-Pruebas manuales en otra terminal:
+Prueba con PowerShell:
 
 ```powershell
-Invoke-RestMethod http://127.0.0.1:8000/health
-
-$body = @{ query = 'vitamin D cancer risk'; model = 'bm25'; top_k = 10 } | ConvertTo-Json
-Invoke-RestMethod http://127.0.0.1:8000/search -Method Post -ContentType 'application/json' -Body $body
+curl.exe "https://examen-1er-bimestre-ri.onrender.com/health"
 ```
 
-Cambiar `bm25` por `tfidf` prueba el segundo ranking. La documentacion interactiva queda disponible solo en el equipo en `http://127.0.0.1:8000/docs`.
+Respuesta esperada:
+
+```json
+{
+  "status": "ok",
+  "documents_indexed": 5183
+}
+```
+
+### Realizar una búsqueda con BM25
+
+```powershell
+curl.exe --% -X POST https://examen-1er-bimestre-ri.onrender.com/search -H "Content-Type: application/json" --data-raw "{\"query\":\"vitamin D cancer risk\",\"model\":\"bm25\",\"top_k\":10}"
+```
+
+### Realizar una búsqueda con TF-IDF
+
+```powershell
+curl.exe --% -X POST https://examen-1er-bimestre-ri.onrender.com/search -H "Content-Type: application/json" --data-raw "{\"query\":\"vitamin D cancer risk\",\"model\":\"tfidf\",\"top_k\":10}"
+```
+
+### Formato de la solicitud
+
+```http
+POST /search
+Content-Type: application/json
+```
+
+```json
+{
+  "query": "texto de la consulta",
+  "model": "bm25",
+  "top_k": 10
+}
+```
+
+El campo `model` acepta `bm25` y `tfidf`. El valor de `top_k` debe estar entre 1 y 100.
+
+Cada resultado incluye:
+
+- Posición en el ranking.
+- Identificador original del documento.
+- Puntuación de relevancia.
+- Título.
+- Fragmento del documento.
+
+> **Nota:** el servicio utiliza una instancia gratuita de Render. Después de un periodo de inactividad puede suspenderse temporalmente, por lo que la primera solicitud podría tardar aproximadamente un minuto mientras vuelve a iniciarse.
 
 ## Archivos
 
