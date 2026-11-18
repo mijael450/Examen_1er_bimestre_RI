@@ -1,0 +1,6 @@
+{
+  "corpus": "scifact",
+  "documents": 5183,
+  "test_queries": 300,
+  "qrel_pairs": 339
+}
